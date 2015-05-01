@@ -1,0 +1,9 @@
+{
+  "manifest_version": 2,
+  "name": "APOD New Tab",
+  "description": "See pictures from Astronomy Picture of the Day when you open a new tab!",
+  "version": "1.0",
+  "chrome_url_overrides": {
+    "newtab": "apod.html"
+  }
+}
