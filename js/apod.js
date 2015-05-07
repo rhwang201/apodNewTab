@@ -19,7 +19,10 @@ $(document).ready(function() {
     return year + '-' + padString((month + 1).toString(), 2) + '-' + padString(date.toString(), 2);
   };
 
-  var cacheBase64Image = function(imgUrl) {
+  /**
+   * Encodes @imgUrl in base64, then calls @callback.
+   */
+  var encodeBase64Image = function(imgUrl, callback) {
     var img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
     img.src = imgUrl;
@@ -33,8 +36,7 @@ $(document).ready(function() {
 
       var dataURL = canvas.toDataURL("image/png");
 
-      var encodedImage = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-      localStorage['apodNewTab_image_' + getDateString()] = encodedImage;
+      callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
   }
 
@@ -56,20 +58,30 @@ $(document).ready(function() {
     $('#apodTime').text(time);
   }
 
+  /**
+   * Renders and caches.
+   */
   var handleApod = function() {
     var response    = xhr.response,
         imageUrl    = response.url,
         title       = response.title,
+        date        = response.date,
         explanation = response.explanation;
 
     render(imageUrl, title);
 
-    cacheBase64Image(imageUrl);
-    localStorage['apodNewTab_title_' + getDateString()] = title;
-    localStorage['apodNewTab_explanation_' + getDateString()] = explanation;
+    encodeBase64Image(imageUrl, function(image) {
+      localStorage['apodNewTab_' + getDateString()] = JSON.stringify({
+        title       : title,
+        image       : image,
+        date        : date,
+        explanation : explanation
+      });
+    });
   }
 
-  var render = function(image, title, isBase64Image) {
+
+  var render = function(image, title, isBase64Image, date) {
     image = (isBase64Image) ? 'data:image/png;base64,' + image: image;
 
     $(document.body).css({
@@ -94,12 +106,11 @@ $(document).ready(function() {
   setInterval(setTime, 60000);
   setInterval(blinkTime, 1500);
 
-  var dateString        = getDateString(),
-      cachedImage       = localStorage['apodNewTab_image_' + dateString],
-      cachedTitle       = localStorage['apodNewTab_title_' + dateString],
-      cachedDescription = localStorage['apodNewTab_description_' + dateString];
+  var dateString = getDateString(),
+      cachedString = localStorage['apodNewTab_' + dateString],
+      cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
 
-  if (cachedImage === undefined || cachedTitle === undefined || cachedDescription === undefined) {
+  if (cachedApod === undefined) {
     // Clear cache
     for (var key in localStorage) {
       if (localStorage.hasOwnProperty(key) && key.substring(0, 10) === 'apodNewTab') {
@@ -121,6 +132,10 @@ $(document).ready(function() {
 
     xhr.send();
   } else {
-    render(cachedImage, cachedTitle, true);
+    var cachedImage = cachedApod.image,
+        cachedDate = cachedApod.date;
+        cachedTitle = cachedApod.title;
+
+    render(cachedImage, cachedTitle, true, cachedDate);
   }
 });
