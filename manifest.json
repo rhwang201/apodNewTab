@@ -7,6 +7,7 @@
     "newtab": "apod.html"
   },
   "permissions": [
+    "http://apod.nasa.gov/",
     "http://api.data.gov/",
     "https://api.data.gov/"
   ]
