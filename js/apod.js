@@ -68,7 +68,7 @@ $(document).ready(function() {
         date        = response.date,
         explanation = response.explanation;
 
-    render(imageUrl, title);
+    render(imageUrl, title, false, date, explanation);
 
     encodeBase64Image(imageUrl, function(image) {
       localStorage['apodNewTab_' + getDateString()] = JSON.stringify({
@@ -81,7 +81,7 @@ $(document).ready(function() {
   }
 
 
-  var render = function(image, title, isBase64Image, date) {
+  var render = function(image, title, isBase64Image, date, explanation) {
     image = (isBase64Image) ? 'data:image/png;base64,' + image: image;
 
     $(document.body).css({
@@ -96,6 +96,13 @@ $(document).ready(function() {
     });
 
     $('#apodTitle').text(title);
+
+    var today = new Date(),
+        year = today.getFullYear().toString().substring(2),
+        month = padString((today.getMonth() + 1).toString(), 2),
+        date = padString((today.getDate()).toString(), 2);
+
+    $('#apodLink').attr('href', 'http://apod.nasa.gov/apod/ap' + year + month + date + '.html');
   };
 
 
@@ -134,8 +141,9 @@ $(document).ready(function() {
   } else {
     var cachedImage = cachedApod.image,
         cachedDate = cachedApod.date;
+        cachedExplanation = cachedApod.explanation;
         cachedTitle = cachedApod.title;
 
-    render(cachedImage, cachedTitle, true, cachedDate);
+    render(cachedImage, cachedTitle, true, cachedDate, cachedExplanation);
   }
 });
