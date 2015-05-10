@@ -19,6 +19,15 @@ $(document).ready(function() {
     return year + '-' + padString((month + 1).toString(), 2) + '-' + padString(date.toString(), 2);
   };
 
+  apodBeginningOfTime = new Date(1995, 5, 16);
+  var genRandomDate = function() {
+    var today         = new Date(),
+        randomPeriod  = Math.floor(Math.random() * (today - apodBeginningOfTime)),
+        randomDate    = new Date(apodBeginningOfTime.valueOf() + randomPeriod);
+
+    return randomDate;
+  };
+
   /**
    * Encodes @imgUrl in base64, then calls @callback.
    */
@@ -82,17 +91,18 @@ $(document).ready(function() {
 
 
   var render = function(image, title, isBase64Image, date, explanation) {
-    image = (isBase64Image) ? 'data:image/png;base64,' + image: image;
+    image = (isBase64Image) ? 'data:image/png;base64,' + image : image;
+    console.log('url(' + image + ')');
 
     $(document.body).css({
-      'background-image': 'url("' + image + '")',
+      'background-image': 'url(' + image + ')',
       'background-repeat': 'no-repeat',
+      'background-size': 'cover',
       'background-position': 'center center',
       'background-attachment': 'fixed',
       '-webkit-background-size': 'cover',
       '-moz-background-size': 'cover',
-      '-o-background-size': 'cover',
-      'background-size': 'cover'
+      '-o-background-size': 'cover'
     });
 
     $('#apodTitle').text(title);
@@ -117,16 +127,19 @@ $(document).ready(function() {
       cachedString = localStorage['apodNewTab_' + dateString],
       cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
 
-  if (cachedApod === undefined) {
+  // TODO rhwang: do not inspect DOM when using encoded image. It is too large and will
+  // crash developer tools.
+  //if (cachedApod === undefined) {
+  if (true) {
     // Clear cache
-    for (var key in localStorage) {
-      if (localStorage.hasOwnProperty(key) && key.substring(0, 10) === 'apodNewTab') {
-        delete localStorage[key];
-      }
-    }
+    //for (var key in localStorage) {
+    //  if (localStorage.hasOwnProperty(key) && key.substring(0, 10) === 'apodNewTab') {
+    //    delete localStorage[key];
+    //  }
+    //}
 
-    var url = 'https://api.data.gov/nasa/planetary/apod' +
-              '?api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
+    var url = 'https://api.data.gov/nasa/planetary/apod?' +
+              'api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
               'date=' + dateString;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -139,10 +152,16 @@ $(document).ready(function() {
 
     xhr.send();
   } else {
-    var cachedImage = cachedApod.image,
-        cachedDate = cachedApod.date;
-        cachedExplanation = cachedApod.explanation;
-        cachedTitle = cachedApod.title;
+    var cachedImage       = cachedApod.image,
+        cachedDate        = cachedApod.date,
+        cachedExplanation = cachedApod.explanation,
+        cachedTitle       = cachedApod.title,
+        isRandom          = cachedApod.isRandom;
+
+    // TODO check if random...
+    //if (isRandom) {
+    //  var date = genRandomDate();
+    //}
 
     render(cachedImage, cachedTitle, true, cachedDate, cachedExplanation);
   }

@@ -13,21 +13,39 @@
   position: absolute;
 
   width: 50%;
-  bottom: 3%;
+  bottom: 5%;
   left: 50%;
   opacity: 1;
   -webkit-transform: translateX(-50%);
 }
 
-h1, h2 {
+h1 {
   color: white;
   text-align: center;
+}
+
+#apodTitle {
+  color: white;
+  text-align: center;
+  font-size: 36px;
 }
 
 #apodTime {
   font-size: 150px;
 }
 
-.fa-random {
+#apodLink {
+  position: absolute;
+  top: 3%;
+  right: 2%;
+
+  color: white;
+}
+
+#random {
+  position: absolute;
+  bottom: 3%;
+  right: 2%;
+
   color: white;
 }
