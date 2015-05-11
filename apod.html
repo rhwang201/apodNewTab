@@ -13,6 +13,13 @@
   </head>
 
   <body>
+    <div id="left">
+      <a id="apodBack" class="fa fa-angle-left" href="#" style="display: none;"></a>
+    </div>
+    <div id="right">
+      <a id="apodForward" class="fa fa-angle-right" href="#" style="display: none;"></a>
+    </div>
+
     <a id="apodLink" class="fa fa-external-link" href="#"></a>
 
     <div id="center">
@@ -23,7 +30,19 @@
       <div id="apodTitle">Astronomy Picture of the Day</div>
     </div>
 
-    <i id="random" class="fa fa-random"></i>
+    <a id="explanation" class="fa fa-info" data-toggle="modal" data-target="#explanationModal" href="#"></a>
+
+    <a id="random" class="fa fa-random" href="#"></a>
+
+    <div class="modal fade" id="explanationModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <p id="modalExplanation"></p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>

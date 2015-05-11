@@ -9,6 +9,20 @@
   -webkit-transform: translate(-50%, -50%);
 }
 
+#left {
+  position: fixed;
+  width: 10%;
+  left: 2%;
+  height: 100%;
+}
+#right {
+  position: fixed;
+  width: 10%;
+  right: 2%;
+  height: 100%;
+}
+
+
 #bottom {
   position: absolute;
 
@@ -34,18 +48,39 @@ h1 {
   font-size: 150px;
 }
 
+#apodBack {
+  position: absolute;
+  top: 50%;
+  left: 2%;
+  color: white;
+  font-size: 30px;
+}
+#apodForward {
+  position: absolute;
+  top: 50%;
+  right: 2%;
+  color: white;
+  font-size: 30px;
+}
+
+
 #apodLink {
   position: absolute;
-  top: 3%;
+  top: 2%;
   right: 2%;
-
   color: white;
 }
 
 #random {
   position: absolute;
-  bottom: 3%;
+  bottom: 2%;
   right: 2%;
+  color: white;
+}
 
+#explanation {
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
   color: white;
 }

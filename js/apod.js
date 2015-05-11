@@ -1,4 +1,7 @@
 $(document).ready(function() {
+  /**
+   * Pads a string with 0's.
+   */
   var padString = function(val, len) {
     if (val.length === len) {
       return val;
@@ -10,16 +13,20 @@ $(document).ready(function() {
     }
   }
 
-  var getDateString = function() {
-    var today = new Date(),
-        year = today.getFullYear(),
-        month = today.getMonth(),
-        date = today.getDate();
+  /**
+   * Date -> String.
+   */
+  var getDateString = function(date) {
+    var year  = date.getFullYear(),
+        month = date.getMonth(),
+        date  = date.getDate();
 
     return year + '-' + padString((month + 1).toString(), 2) + '-' + padString(date.toString(), 2);
   };
 
-  apodBeginningOfTime = new Date(1995, 5, 16);
+  /**
+   * Returns a random date from apodBeginningOfTime till now.
+   */
   var genRandomDate = function() {
     var today         = new Date(),
         randomPeriod  = Math.floor(Math.random() * (today - apodBeginningOfTime)),
@@ -49,6 +56,9 @@ $(document).ready(function() {
     };
   }
 
+  /**
+   * Sets the time.
+   */
   var setTime = function() {
     var now     = new Date(),
         hour    = padString(now.getHours().toString(), 2),
@@ -56,6 +66,9 @@ $(document).ready(function() {
     $('#apodTime').text(hour + ':' + minute);
   }
 
+  /**
+   * Blinks the ':' in the time.
+   */
   var blinkTime = function() {
     var now     = new Date(),
         hour    = padString(now.getHours().toString(), 2),
@@ -68,10 +81,57 @@ $(document).ready(function() {
   }
 
   /**
+   * Hits APOD API.
+   */
+  var getApod = function(date, callback) {
+    var dateString = getDateString(date),
+        cachedString = localStorage['apodNewTab_' + dateString],
+        cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
+
+    // TODO rhwang: do not inspect DOM when using encoded image. It is too large and will
+    // crash developer tools.
+    if (true) {
+    //if (cachedApod === undefined) {
+      var url = 'https://api.data.gov/nasa/planetary/apod?' +
+                'api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
+                'date=' + dateString;
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.responseType = 'json';
+
+      xhr.onload = function() {
+        localStorage['apodNewTab_currentDate'] = date.toString();
+        currentDate = date;
+        callback.apply(this);
+      };
+      xhr.onerror = function() {
+        console.log('xhr error: ', xhr);
+      };
+
+      xhr.send();
+    } else {
+      currentDate = date;
+
+      var cachedImage       = cachedApod.image,
+          cachedDate        = cachedApod.date,
+          cachedExplanation = cachedApod.explanation,
+          cachedTitle       = cachedApod.title,
+          isRandom          = cachedApod.isRandom;
+
+      // TODO check if random...
+      //if (isRandom) {
+      //  var date = genRandomDate();
+      //}
+
+      render(cachedImage, cachedTitle, true, cachedDate, cachedExplanation);
+    }
+  };
+
+  /**
    * Renders and caches.
    */
   var handleApod = function() {
-    var response    = xhr.response,
+    var response    = this.response,
         imageUrl    = response.url,
         title       = response.title,
         date        = response.date,
@@ -80,7 +140,7 @@ $(document).ready(function() {
     render(imageUrl, title, false, date, explanation);
 
     encodeBase64Image(imageUrl, function(image) {
-      localStorage['apodNewTab_' + getDateString()] = JSON.stringify({
+      localStorage['apodNewTab_' + getDateString(new Date())] = JSON.stringify({
         title       : title,
         image       : image,
         date        : date,
@@ -89,10 +149,11 @@ $(document).ready(function() {
     });
   }
 
-
+  /**
+   * Renders info onto page.
+   */
   var render = function(image, title, isBase64Image, date, explanation) {
     image = (isBase64Image) ? 'data:image/png;base64,' + image : image;
-    console.log('url(' + image + ')');
 
     $(document.body).css({
       'background-image': 'url(' + image + ')',
@@ -107,6 +168,8 @@ $(document).ready(function() {
 
     $('#apodTitle').text(title);
 
+    $('#modalExplanation').text(explanation);
+
     var today = new Date(),
         year = today.getFullYear().toString().substring(2),
         month = padString((today.getMonth() + 1).toString(), 2),
@@ -119,50 +182,45 @@ $(document).ready(function() {
   /**
    * Main.
    */
+  var today = new Date(),
+      currentDate;
+  if (localStorage['apodNewTab_currentDate'] && !isNaN(new Date(localStorage['apodNewTab_currentDate']).valueOf())) {
+    currentDate = new Date((localStorage['apodNewTab_currentDate']));
+  } else {
+    currentDate = new Date();
+  }
+  var apodBeginningOfTime = new Date(1995, 5, 16);
+
   setTime();
-  setInterval(setTime, 60000);
+  setInterval(setTime, 1000);
   setInterval(blinkTime, 1500);
 
-  var dateString = getDateString(),
-      cachedString = localStorage['apodNewTab_' + dateString],
-      cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
+  $('#left').mouseover(function() {
+    $(this).find('#apodBack').fadeIn();
+  });
+  $('#left').mouseout(function() {
+    $(this).find('#apodBack').fadeOut();
+  });
+  $('#right').mouseover(function() {
+    $(this).find('#apodForward').fadeIn();
+  });
+  $('#right').mouseout(function() {
+    $(this).find('#apodForward').fadeOut();
+  });
 
-  // TODO rhwang: do not inspect DOM when using encoded image. It is too large and will
-  // crash developer tools.
-  //if (cachedApod === undefined) {
-  if (true) {
-    // Clear cache
-    //for (var key in localStorage) {
-    //  if (localStorage.hasOwnProperty(key) && key.substring(0, 10) === 'apodNewTab') {
-    //    delete localStorage[key];
-    //  }
-    //}
+  $('#apodBack').click(function() {
+    // TODO Mask
+    var newDate = new Date(currentDate.valueOf() - 1000 * 60 * 60 * 24);
+    console.log('back: ' + newDate);
+    getApod(newDate, handleApod);
+  });
+  $('#apodForward').click(function() {
+    // TODO Mask
+    var newDate = new Date(currentDate.valueOf() + 1000 * 60 * 60 * 24);
+    console.log('forward: ' + newDate);
+    getApod(newDate, handleApod);
+  });
 
-    var url = 'https://api.data.gov/nasa/planetary/apod?' +
-              'api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
-              'date=' + dateString;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
 
-    xhr.onload = handleApod;
-    xhr.onerror = function() {
-      console.log('xhr error: ', xhr);
-    };
-
-    xhr.send();
-  } else {
-    var cachedImage       = cachedApod.image,
-        cachedDate        = cachedApod.date,
-        cachedExplanation = cachedApod.explanation,
-        cachedTitle       = cachedApod.title,
-        isRandom          = cachedApod.isRandom;
-
-    // TODO check if random...
-    //if (isRandom) {
-    //  var date = genRandomDate();
-    //}
-
-    render(cachedImage, cachedTitle, true, cachedDate, cachedExplanation);
-  }
+  getApod(currentDate, handleApod);
 });
