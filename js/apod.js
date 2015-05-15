@@ -1,3 +1,8 @@
+/**
+ * @author Richard Hwang
+ * Astronomy Picture of the Day New Tab
+ */
+
 $(document).ready(function() {
   /**
    * Pads a string with 0's.
@@ -14,6 +19,8 @@ $(document).ready(function() {
   }
 
   /**
+   * @param {Date} date
+   * @return {String}
    * Date -> String.
    */
   var getDateString = function(date) {
@@ -25,6 +32,7 @@ $(document).ready(function() {
   };
 
   /**
+   * @return {Date}
    * Returns a random date from apodBeginningOfTime till now.
    */
   var genRandomDate = function() {
@@ -36,6 +44,22 @@ $(document).ready(function() {
   };
 
   /**
+   * @param {Date} date
+   * @return {Date}
+   * Clears time components of @date.
+   */
+  var clearTime = function(date) {
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    return date;
+  }
+
+  /**
+   * @param {String} imgUrl
+   * @param {function} callback
    * Encodes @imgUrl in base64, then calls @callback.
    */
   var encodeBase64Image = function(imgUrl, callback) {
@@ -78,20 +102,96 @@ $(document).ready(function() {
     time = (time.indexOf(':') > -1) ? (hour + ' ' + minute) : (hour + ':' + minute);
 
     $('#apodTime').text(time);
-  }
+  };
 
   /**
+   * @param {function} funk
+   * @return {function}
+   */
+  var apodMove = function(funk) {
+    return function() {
+      // TODO mask
+      var newDate = new Date(funk(currentDate.valueOf(), 1000 * 60 * 60 * 24));
+      getApod(newDate, handleApod);
+    };
+  }
+
+  var apodBackward = apodMove(function(x, y) { return x - y; });
+  var apodForward = apodMove(function(x, y) { return x + y; });
+
+  /**
+   * Set up hotkeys.
+   */
+  var setupHotkeys = function() {
+    $(document).keypress(function(e) {
+      var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
+      if (!charCode) {
+        return;
+      }
+
+      var key;
+      switch (charCode) {
+        case '37':
+          key = 'left';
+          break;
+        case '39':
+          key = 'right';
+          break;
+        default:
+          key = String.fromCharCode(charCode);
+          break;
+      }
+
+      switch (key) {
+        case '?':
+          showHelp();  // TODO
+          break;
+        case 'left':
+          apodBackward();
+          break;
+        case 'right':
+          apodForward();
+          break;
+        case 'd':
+          showDescription(); // TODO
+          break;
+      }
+    });
+  };
+
+  /**
+   * Listeners on carousel events.
+   */
+  var setupCarousel = function() {
+    $('#left').mouseover(function() {
+      $(this).find('#apodBack').fadeIn();
+    });
+    $('#left').mouseout(function() {
+      $(this).find('#apodBack').fadeOut();
+    });
+    $('#right').mouseover(function() {
+      $(this).find('#apodForward').fadeIn();
+    });
+    $('#right').mouseout(function() {
+      $(this).find('#apodForward').fadeOut();
+    });
+
+    $('#apodBack').click(apodBackward);
+    $('#apodForward').click(apodForward);
+  };
+
+  /**
+   * @param {Date} date
+   * @param {function} callback
    * Hits APOD API.
    */
   var getApod = function(date, callback) {
+    console.log('getApod' + date);
     var dateString = getDateString(date),
-        cachedString = localStorage['apodNewTab_' + dateString],
+        cachedString = localStorage[dateString],
         cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
 
-    // TODO rhwang: do not inspect DOM when using encoded image. It is too large and will
-    // crash developer tools.
-    if (true) {
-    //if (cachedApod === undefined) {
+    if (cachedApod === undefined) {
       var url = 'https://api.data.gov/nasa/planetary/apod?' +
                 'api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
                 'date=' + dateString;
@@ -100,7 +200,7 @@ $(document).ready(function() {
       xhr.responseType = 'json';
 
       xhr.onload = function() {
-        localStorage['apodNewTab_currentDate'] = date.toString();
+        localStorage['currentDate'] = clearTime(new Date(date)).toString();
         currentDate = date;
         callback.apply(this);
       };
@@ -139,17 +239,27 @@ $(document).ready(function() {
 
     render(imageUrl, title, false, date, explanation);
 
+    // TODO rhwang...maybe just cache the url?
     encodeBase64Image(imageUrl, function(image) {
-      localStorage['apodNewTab_' + getDateString(new Date())] = JSON.stringify({
-        title       : title,
-        image       : image,
-        date        : date,
-        explanation : explanation
-      });
+      try {
+        localStorage[date] = JSON.stringify({
+          title       : title,
+          image       : image,
+          date        : date,
+          explanation : explanation
+        });
+      } catch(e) {
+        console.log('localStorage set failed.');
+      }
     });
   }
 
   /**
+   * @param {String} image
+   * @param {String} title
+   * @param {Boolean} isBase64Image
+   * @param {Date} date
+   * @param {String} explanation
    * Renders info onto page.
    */
   var render = function(image, title, isBase64Image, date, explanation) {
@@ -179,47 +289,45 @@ $(document).ready(function() {
   };
 
 
+
+
   /**
-   * Main.
+   * MAIN.
    */
   var today = new Date(),
+      lastOpenedString = localStorage['lastOpened'],
+      lastOpened = new Date(lastOpenedString),
+      cachedCurrentDateString = localStorage['currentDate'],
+      cachedCurrentDate = new Date(cachedCurrentDateString),
       currentDate;
-  if (localStorage['apodNewTab_currentDate'] && !isNaN(new Date(localStorage['apodNewTab_currentDate']).valueOf())) {
-    currentDate = new Date((localStorage['apodNewTab_currentDate']));
+
+  // TODO continue this cache invalidation.
+  // TODO maybe get moment...
+  // use currentDate if lastOpened is not behind.
+  // if lastOpened is behind or no currentDate, use today
+  if (isNaN(cachedCurrentDate.valueOf())) {
+    currentDate = clearTime(new Date());
   } else {
-    currentDate = new Date();
+    if (isNaN(lastOpened.valueOf()) || (clearTime(new Date(lastOpened)) < clearTime(new Date(today)))) {
+      currentDate = clearTime(new Date());
+    } else {
+      currentDate = cachedCurrentDate;
+    }
   }
+  localStorage['lastOpened'] = clearTime(new Date(today)).toString();
+
+  //if (localStorage['currentDate'] && !isNaN(new Date(localStorage['currentDate']).valueOf())) {
+  //  currentDate = new Date((localStorage['currentDate']));
+  //} else {
+  //  currentDate = new Date();
+  //}
   var apodBeginningOfTime = new Date(1995, 5, 16);
 
   setTime();
   setInterval(setTime, 1000);
   setInterval(blinkTime, 1500);
-
-  $('#left').mouseover(function() {
-    $(this).find('#apodBack').fadeIn();
-  });
-  $('#left').mouseout(function() {
-    $(this).find('#apodBack').fadeOut();
-  });
-  $('#right').mouseover(function() {
-    $(this).find('#apodForward').fadeIn();
-  });
-  $('#right').mouseout(function() {
-    $(this).find('#apodForward').fadeOut();
-  });
-
-  $('#apodBack').click(function() {
-    // TODO Mask
-    var newDate = new Date(currentDate.valueOf() - 1000 * 60 * 60 * 24);
-    console.log('back: ' + newDate);
-    getApod(newDate, handleApod);
-  });
-  $('#apodForward').click(function() {
-    // TODO Mask
-    var newDate = new Date(currentDate.valueOf() + 1000 * 60 * 60 * 24);
-    console.log('forward: ' + newDate);
-    getApod(newDate, handleApod);
-  });
+  setupHotkeys();
+  setupCarousel();
 
 
   getApod(currentDate, handleApod);
