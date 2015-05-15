@@ -223,7 +223,7 @@ $(document).ready(function() {
       //  var date = genRandomDate();
       //}
 
-      render(cachedImage, cachedTitle, true, cachedDate, cachedExplanation);
+      render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation);
     }
   };
 
@@ -240,18 +240,28 @@ $(document).ready(function() {
     render(imageUrl, title, false, date, explanation);
 
     // TODO rhwang...maybe just cache the url?
-    encodeBase64Image(imageUrl, function(image) {
-      try {
-        localStorage[date] = JSON.stringify({
-          title       : title,
-          image       : image,
-          date        : date,
-          explanation : explanation
-        });
-      } catch(e) {
-        console.log('localStorage set failed.');
-      }
-    });
+    //encodeBase64Image(imageUrl, function(image) {
+    //  try {
+    //    localStorage[date] = JSON.stringify({
+    //      title       : title,
+    //      image       : image,
+    //      date        : date,
+    //      explanation : explanation
+    //    });
+    //  } catch(e) {
+    //    console.log('localStorage set failed.');
+    //  }
+    //});
+    try {
+      localStorage[date] = JSON.stringify({
+        title       : title,
+        image       : imageUrl,
+        date        : date,
+        explanation : explanation
+      });
+    } catch(e) {
+      console.log('localStorage set failed.');
+    }
   }
 
   /**
