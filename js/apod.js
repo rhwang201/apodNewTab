@@ -123,7 +123,7 @@ $(document).ready(function() {
    * Set up hotkeys.
    */
   var setupHotkeys = function() {
-    $(document).keypress(function(e) {
+    $(document).keydown(function(e) {
       var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
       if (!charCode) {
         return;
@@ -131,10 +131,10 @@ $(document).ready(function() {
 
       var key;
       switch (charCode) {
-        case '37':
+        case 37:
           key = 'left';
           break;
-        case '39':
+        case 39:
           key = 'right';
           break;
         default:
@@ -152,8 +152,8 @@ $(document).ready(function() {
         case 'right':
           apodForward();
           break;
-        case 'd':
-          showDescription(); // TODO
+        case 'D':
+          $('#explanationModal').modal('toggle');
           break;
       }
     });
@@ -239,19 +239,6 @@ $(document).ready(function() {
 
     render(imageUrl, title, false, date, explanation);
 
-    // TODO rhwang...maybe just cache the url?
-    //encodeBase64Image(imageUrl, function(image) {
-    //  try {
-    //    localStorage[date] = JSON.stringify({
-    //      title       : title,
-    //      image       : image,
-    //      date        : date,
-    //      explanation : explanation
-    //    });
-    //  } catch(e) {
-    //    console.log('localStorage set failed.');
-    //  }
-    //});
     try {
       localStorage[date] = JSON.stringify({
         title       : title,
@@ -268,7 +255,7 @@ $(document).ready(function() {
    * @param {String} image
    * @param {String} title
    * @param {Boolean} isBase64Image
-   * @param {Date} date
+   * @param {String} date
    * @param {String} explanation
    * Renders info onto page.
    */
@@ -288,12 +275,13 @@ $(document).ready(function() {
 
     $('#apodTitle').text(title);
 
-    $('#modalExplanation').text(explanation);
+    $('#modal-title').text(date);
+    $('#modal-explanation').text(explanation);
 
-    var today = new Date(),
-        year = today.getFullYear().toString().substring(2),
-        month = padString((today.getMonth() + 1).toString(), 2),
-        date = padString((today.getDate()).toString(), 2);
+    var date = new Date(date),
+        year = date.getFullYear().toString().substring(2),
+        month = padString((date.getMonth() + 1).toString(), 2),
+        date = padString((date.getDate() + 1).toString(), 2);
 
     $('#apodLink').attr('href', 'http://apod.nasa.gov/apod/ap' + year + month + date + '.html');
   };
@@ -311,10 +299,6 @@ $(document).ready(function() {
       cachedCurrentDate = new Date(cachedCurrentDateString),
       currentDate;
 
-  // TODO continue this cache invalidation.
-  // TODO maybe get moment...
-  // use currentDate if lastOpened is not behind.
-  // if lastOpened is behind or no currentDate, use today
   if (isNaN(cachedCurrentDate.valueOf())) {
     currentDate = clearTime(new Date());
   } else {
@@ -326,11 +310,6 @@ $(document).ready(function() {
   }
   localStorage['lastOpened'] = clearTime(new Date(today)).toString();
 
-  //if (localStorage['currentDate'] && !isNaN(new Date(localStorage['currentDate']).valueOf())) {
-  //  currentDate = new Date((localStorage['currentDate']));
-  //} else {
-  //  currentDate = new Date();
-  //}
   var apodBeginningOfTime = new Date(1995, 5, 16);
 
   setTime();
