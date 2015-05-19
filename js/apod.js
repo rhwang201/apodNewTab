@@ -131,24 +131,16 @@ $(document).ready(function() {
         return;
       }
 
-      var key;
-      switch (charCode) {
-        case 37:
-          key = 'left';
-          break;
-        case 39:
-          key = 'right';
-          break;
-        default:
-          key = String.fromCharCode(charCode);
-          break;
-      }
+      var key = String.fromCharCode(charCode);
       switch (key) {
         case '?':
           $('#helpModal').modal('toggle');
           break;
         case 'd':
           $('#explanationModal').modal('toggle');
+          break;
+        case 't':
+          $('#today').trigger('click');
           break;
       }
     });
@@ -256,6 +248,7 @@ $(document).ready(function() {
       //}
 
       render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation);
+      localStorage['currentDate'] = clearTime(new Date(date)).toString();
     }
   };
 
