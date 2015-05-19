@@ -64,6 +64,13 @@ h1 {
 }
 
 
+#today {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  color: white;
+}
+
 #apodLink {
   position: absolute;
   top: 2%;

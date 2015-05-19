@@ -189,6 +189,16 @@ $(document).ready(function() {
   };
 
   /**
+   * Jumps to today.
+   */
+  var setupHome = function() {
+    $('#today').click(function(e) {
+      var newDate = new Date();
+      getApod(newDate, handleApod);
+    });
+  };
+
+  /**
    * @param {Date} date
    * @param {function} callback
    * Hits APOD API.
@@ -325,6 +335,7 @@ $(document).ready(function() {
   setInterval(blinkTime, 1500);
   setupHotkeys();
   setupCarousel();
+  setupHome();
 
 
   getApod(currentDate, handleApod);
