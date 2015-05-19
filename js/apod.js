@@ -110,8 +110,11 @@ $(document).ready(function() {
    */
   var apodMove = function(funk) {
     return function() {
-      // TODO mask
       var newDate = new Date(funk(currentDate.valueOf(), 1000 * 60 * 60 * 24));
+      if (clearTime(new Date()) < clearTime(new Date(newDate))) {
+        $('#futureModal').modal('toggle');
+        return;
+      }
       getApod(newDate, handleApod);
     };
   }
@@ -123,7 +126,7 @@ $(document).ready(function() {
    * Set up hotkeys.
    */
   var setupHotkeys = function() {
-    $(document).keydown(function(e) {
+    $(document).keypress(function(e) {
       var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
       if (!charCode) {
         return;
@@ -141,19 +144,24 @@ $(document).ready(function() {
           key = String.fromCharCode(charCode);
           break;
       }
-
       switch (key) {
         case '?':
-          showHelp();  // TODO
+          $('#helpModal').modal('toggle');
           break;
-        case 'left':
+        case 'd':
+          $('#explanationModal').modal('toggle');
+          break;
+      }
+    });
+
+
+    $(document).keydown(function(e) {
+      switch (e.keyCode) {
+        case 37:
           apodBackward();
           break;
-        case 'right':
+        case 39:
           apodForward();
-          break;
-        case 'D':
-          $('#explanationModal').modal('toggle');
           break;
       }
     });
