@@ -118,7 +118,6 @@ $(document).ready(function() {
       getApod(newDate, handleApod);
     };
   }
-
   var apodBackward = apodMove(function(x, y) { return x - y; });
   var apodForward = apodMove(function(x, y) { return x + y; });
 
@@ -195,6 +194,21 @@ $(document).ready(function() {
     $('#today').click(function(e) {
       var newDate = new Date();
       getApod(newDate, handleApod);
+    });
+  };
+
+  /**
+   * Handles random mode.
+   */
+  var setupRandom = function() {
+    var state = localStorage['isRandom'] === 'true';
+    $('#random').css('color', state ? 'orange' : 'white');
+
+    $('#random').click(function(e) {
+      var state = localStorage['isRandom'] !== 'true';
+      $('#random').css('color', state ? 'yellow' : 'white');
+      localStorage['isRandom'] = state;
+
     });
   };
 
@@ -310,11 +324,14 @@ $(document).ready(function() {
   /**
    * MAIN.
    */
+  var apodBeginningOfTime = new Date(1995, 5, 16);
+
   var today = new Date(),
       lastOpenedString = localStorage['lastOpened'],
       lastOpened = new Date(lastOpenedString),
       cachedCurrentDateString = localStorage['currentDate'],
       cachedCurrentDate = new Date(cachedCurrentDateString),
+      isRandom = localStorage['isRandom'] === 'true',
       currentDate;
 
   if (isNaN(cachedCurrentDate.valueOf())) {
@@ -322,13 +339,13 @@ $(document).ready(function() {
   } else {
     if (isNaN(lastOpened.valueOf()) || (clearTime(new Date(lastOpened)) < clearTime(new Date(today)))) {
       currentDate = clearTime(new Date());
+    } else if (isRandom === true) {
+      currentDate = clearTime(genRandomDate());
     } else {
       currentDate = cachedCurrentDate;
     }
   }
   localStorage['lastOpened'] = clearTime(new Date(today)).toString();
-
-  var apodBeginningOfTime = new Date(1995, 5, 16);
 
   setTime();
   setInterval(setTime, 1000);
@@ -336,6 +353,7 @@ $(document).ready(function() {
   setupHotkeys();
   setupCarousel();
   setupHome();
+  setupRandom();
 
 
   getApod(currentDate, handleApod);
