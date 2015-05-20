@@ -242,11 +242,6 @@ $(document).ready(function() {
           cachedTitle       = cachedApod.title,
           isRandom          = cachedApod.isRandom;
 
-      // TODO check if random...
-      //if (isRandom) {
-      //  var date = genRandomDate();
-      //}
-
       render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation);
       localStorage['currentDate'] = clearTime(new Date(date)).toString();
     }
