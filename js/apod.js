@@ -230,6 +230,7 @@ $(document).ready(function() {
       };
       xhr.onerror = function() {
         console.log('xhr error: ', xhr);
+        $('#errorModal').modal('show');
       };
 
       xhr.send();
