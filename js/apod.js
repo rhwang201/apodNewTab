@@ -55,7 +55,19 @@ $(document).ready(function() {
     date.setMilliseconds(0);
 
     return date;
-  }
+  };
+
+  /**
+   * Removes all cached dates.
+   */
+  var clearCache = function() {
+    console.log('clearing cache');
+    for (var key in localStorage) {
+      if (localStorage.hasOwnProperty(key) && key.match(/\d\d\d\d-\d\d-\d\d/)) {
+        delete localStorage[key];
+      }
+    }
+  };
 
   /**
    * @param {String} imgUrl
@@ -226,7 +238,7 @@ $(document).ready(function() {
       xhr.onload = function() {
         localStorage['currentDate'] = clearTime(new Date(date)).toString();
         currentDate = date;
-        callback.apply(this);
+        callback.apply(this, [date]);
       };
       xhr.onerror = function() {
         console.log('xhr error: ', xhr);
@@ -251,11 +263,11 @@ $(document).ready(function() {
   /**
    * Renders and caches.
    */
-  var handleApod = function() {
+  var handleApod = function(date) {
     var response    = this.response,
         imageUrl    = response.url,
         title       = response.title,
-        date        = response.date,
+        date        = getDateString(date),
         explanation = response.explanation;
 
     render(imageUrl, title, false, date, explanation);
@@ -268,7 +280,19 @@ $(document).ready(function() {
         explanation : explanation
       });
     } catch(e) {
-      console.log('localStorage set failed.');
+      // Clear cache.
+      clearCache();
+
+      try {
+        localStorage[date] = JSON.stringify({
+          title       : title,
+          image       : imageUrl,
+          date        : date,
+          explanation : explanation
+        });
+      } catch(e) {
+        console.log('localStorage set failed.');
+      }
     }
   }
 
@@ -323,13 +347,18 @@ $(document).ready(function() {
       isRandom = localStorage['isRandom'] === 'true',
       currentDate;
 
+  // No current date state.
   if (isNaN(cachedCurrentDate.valueOf())) {
     currentDate = clearTime(new Date());
   } else {
+    // Never opened before, or it's a new day
     if (isNaN(lastOpened.valueOf()) || (clearTime(new Date(lastOpened)) < clearTime(new Date(today)))) {
+      $('#newDay').show();
       currentDate = clearTime(new Date());
+    // Random date.
     } else if (isRandom === true) {
       currentDate = clearTime(genRandomDate());
+    // Stick with current date.
     } else {
       currentDate = cachedCurrentDate;
     }

@@ -1,10 +1,15 @@
 {
   "manifest_version": 2,
   "name": "APOD New Tab",
-  "description": "See pictures from Astronomy Picture of the Day when you open a new tab!",
+  "short_name": "APOD New Tab",
   "version": "1.0",
+
+  "description": "See pictures from Astronomy Picture of the Day when you open a new tab!",
   "chrome_url_overrides": {
     "newtab": "apod.html"
+  },
+  "icons": {
+    "48": "img/48.png"
   },
   "permissions": [
     "http://apod.nasa.gov/",
