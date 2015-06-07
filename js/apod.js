@@ -122,6 +122,7 @@ $(document).ready(function() {
    */
   var apodMove = function(funk) {
     return function() {
+      $('#errorModal').modal('hide');
       var newDate = new Date(funk(currentDate.valueOf(), 1000 * 60 * 60 * 24));
       if (clearTime(new Date()) < clearTime(new Date(newDate))) {
         $('#futureModal').modal('toggle');
@@ -253,9 +254,10 @@ $(document).ready(function() {
           cachedDate        = cachedApod.date,
           cachedExplanation = cachedApod.explanation,
           cachedTitle       = cachedApod.title,
+          media_type        = cachedApod.media_type,
           isRandom          = cachedApod.isRandom;
 
-      render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation);
+      render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation, media_type);
       localStorage['currentDate'] = clearTime(new Date(date)).toString();
     }
   };
@@ -268,9 +270,10 @@ $(document).ready(function() {
         imageUrl    = response.url,
         title       = response.title,
         date        = getDateString(date),
+        media_type  = response.media_type,
         explanation = response.explanation;
 
-    render(imageUrl, title, false, date, explanation);
+    render(imageUrl, title, false, date, explanation, media_type);
 
     try {
       localStorage[date] = JSON.stringify({
@@ -302,9 +305,22 @@ $(document).ready(function() {
    * @param {Boolean} isBase64Image
    * @param {String} date
    * @param {String} explanation
+   * @param {String} media_type
    * Renders info onto page.
    */
-  var render = function(image, title, isBase64Image, date, explanation) {
+  var render = function(image, title, isBase64Image, date, explanation, media_type) {
+    if (media_type && media_type !== 'image') {
+      $('#errorModal').modal('show');
+
+      if (image && !isBase64Image) {
+        $('#we-got').show();
+        $('#error-url').attr('href', image);
+      } else {
+        $('#we-got').hide();
+      }
+    }
+
+
     image = (isBase64Image) ? 'data:image/png;base64,' + image : image;
 
     $(document.body).css({
