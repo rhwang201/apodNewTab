@@ -98,23 +98,11 @@ $(document).ready(function() {
   var setTime = function() {
     var now     = new Date(),
         hour    = padString(now.getHours().toString(), 2),
-        minute  = padString(now.getMinutes().toString(), 2);
-    $('#apodTime').text(hour + ':' + minute);
+        minute  = padString(now.getMinutes().toString(), 2),
+        seconds = now.getSeconds(),
+        colon   = seconds % 3 === 0 ? ':' : ' ';
+    $('#apodTime').text(hour + colon + minute);
   }
-
-  /**
-   * Blinks the ':' in the time.
-   */
-  var blinkTime = function() {
-    var now     = new Date(),
-        hour    = padString(now.getHours().toString(), 2),
-        minute  = padString(now.getMinutes().toString(), 2);
-
-    var time = $('#apodTime').text();
-    time = (time.indexOf(':') > -1) ? (hour + ' ' + minute) : (hour + ':' + minute);
-
-    $('#apodTime').text(time);
-  };
 
   /**
    * @param {function} funk
@@ -383,7 +371,6 @@ $(document).ready(function() {
 
   setTime();
   setInterval(setTime, 1000);
-  setInterval(blinkTime, 1500);
   setupHotkeys();
   setupCarousel();
   setupHome();
