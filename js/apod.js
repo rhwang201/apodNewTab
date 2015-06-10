@@ -268,6 +268,7 @@ $(document).ready(function() {
         title       : title,
         image       : imageUrl,
         date        : date,
+        media_type  : media_type,
         explanation : explanation
       });
     } catch(e) {
@@ -279,6 +280,7 @@ $(document).ready(function() {
           title       : title,
           image       : imageUrl,
           date        : date,
+          media_type  : media_type,
           explanation : explanation
         });
       } catch(e) {
