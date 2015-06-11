@@ -299,7 +299,7 @@ $(document).ready(function() {
    * Renders info onto page.
    */
   var render = function(image, title, isBase64Image, date, explanation, media_type) {
-    if (media_type && media_type !== 'image') {
+    if (media_type && media_type !== 'image' && media_type !== 'video') {
       $('#errorModal').modal('show');
 
       if (image && !isBase64Image) {
@@ -311,18 +311,33 @@ $(document).ready(function() {
     }
 
 
-    image = (isBase64Image) ? 'data:image/png;base64,' + image : image;
+    if (media_type === 'image' || !media_type) {
+      image = (isBase64Image) ? 'data:image/png;base64,' + image : image;
+      $(document.body).css({
+        'background-image': 'url(' + image + ')',
+        'background-color': '',
+        'background-repeat': 'no-repeat',
+        'background-size': 'cover',
+        'background-position': 'center center',
+        'background-attachment': 'fixed',
+        '-webkit-background-size': 'cover',
+        '-moz-background-size': 'cover',
+        '-o-background-size': 'cover'
+      });
+      $('#video').hide();
+      $('#apodTime').show();
+      $('#apodTitle').show();
+    } else if (media_type === 'video') {
+      $(document.body).css({
+        'background-image': '',
+        'background-color': 'black',
+      });
+      $('#video').attr('src', image);
+      $('#video').show();
 
-    $(document.body).css({
-      'background-image': 'url(' + image + ')',
-      'background-repeat': 'no-repeat',
-      'background-size': 'cover',
-      'background-position': 'center center',
-      'background-attachment': 'fixed',
-      '-webkit-background-size': 'cover',
-      '-moz-background-size': 'cover',
-      '-o-background-size': 'cover'
-    });
+      $('#apodTime').hide();
+      $('#apodTitle').hide();
+    }
 
     $('#apodTitle').text(title);
 
