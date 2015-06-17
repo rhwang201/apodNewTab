@@ -6,13 +6,12 @@ html, body {
   position: absolute;
 
   display: block;
-  top: 40%;
+  top: 35%;
   left: 50%;
   width: 100%;
   text-align: center;
   -webkit-transform: translate(-50%, -50%);
 }
-
 #left {
   position: fixed;
   width: 10%;
@@ -21,21 +20,33 @@ html, body {
 }
 #right {
   position: fixed;
-  width: 10%;
+  width: 5%;
   right: 2%;
   height: 100%;
 }
-
-
 #bottom {
   position: absolute;
-
   width: 50%;
-  bottom: 5%;
+  bottom: 10%;
   left: 50%;
-  opacity: 1;
   -webkit-transform: translateX(-50%);
 }
+#dock {
+  position: absolute;
+  width: 10%;
+  bottom: 0%;
+  left: 50%;
+  opacity: 0.8;
+  -webkit-transform: translateX(-50%);
+
+  text-align: justify;
+}
+#dock:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+}
+
 
 #video {
   width: 75%;
@@ -44,6 +55,7 @@ html, body {
   margin-right: auto;
 }
 
+
 h1 {
   color: white;
   text-align: center;
@@ -51,9 +63,10 @@ h1 {
 
 #apodTime {
   font-size: 320px;
-  opacity: 0.4;
+  opacity: 0.3;
   font-weight: bold;
   font-family: helvetica, sans-serif;
+  text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;
 }
 #apodTitle {
   color: white;
@@ -61,6 +74,7 @@ h1 {
   font-size: 36px;
   opacity: 0.8;
   font-family: helvetica, sans-serif;
+  text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;
 }
 #newDay {
   color: white;
@@ -84,32 +98,10 @@ h1 {
 }
 
 
-#today {
-  position: absolute;
-  top: 2%;
-  left: 2%;
+.fa {
   color: white;
-}
-
-#apodLink {
-  position: absolute;
-  top: 2%;
-  right: 2%;
-  color: white;
-}
-
-#random {
-  position: absolute;
-  bottom: 2%;
-  right: 2%;
-  color: white;
-}
-
-#explanation {
-  position: absolute;
-  bottom: 2%;
-  left: 2%;
-  color: white;
+  display: inline-block;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 .modal-content {

@@ -15,17 +15,6 @@
   <body>
     <iframe id="video" src="" height="100%" width="80%" style="display: none;" frameBorder="0"></iframe>
 
-    <div id="left">
-      <a id="apodBack" class="fa fa-angle-left" href="#" style="display: none;"></a>
-    </div>
-    <div id="right">
-      <a id="apodForward" class="fa fa-angle-right" href="#" style="display: none;"></a>
-    </div>
-
-    <a id="today" class="fa fa-home" href="#"></a>
-
-    <a id="apodLink" class="fa fa-external-link" href="#"></a>
-
     <div id="center">
       <h1 id="apodTime"></h1>
     </div>
@@ -35,9 +24,12 @@
       <div id="newDay" style="display: none;">It's a new day! Let's get started</div>
     </div>
 
-    <a id="explanation" class="fa fa-info" data-toggle="modal" data-target="#explanationModal" href="#"></a>
-
-    <a id="random" class="fa fa-random" href="#"></a>
+    <div id="dock">
+      <a id="today" class="fa fa-home fa-lg" href="#"></a>
+      <a id="apodLink" class="fa fa-external-link fa-lg" href="#"></a>
+      <a id="explanation" class="fa fa-question fa-lg" data-toggle="modal" data-target="#explanationModal" href="#"></a>
+      <a id="random" class="fa fa-random fa-lg" href="#"></a>
+    </div>
 
 
     <div class="modal fade" id="explanationModal" aria-hidden="true">
@@ -131,6 +123,13 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="left">
+      <a id="apodBack" class="fa fa-angle-left" href="#" style="display: none;"></a>
+    </div>
+    <div id="right">
+      <a id="apodForward" class="fa fa-angle-right" href="#" style="display: none;"></a>
     </div>
 
 

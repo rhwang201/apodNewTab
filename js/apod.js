@@ -112,8 +112,10 @@ $(document).ready(function() {
       $('#errorModal').modal('hide');
       var newDate = new Date(funk(currentDate.valueOf(), 1000 * 60 * 60 * 24));
       if (clearTime(new Date()) < clearTime(new Date(newDate))) {
-        $('#futureModal').modal('toggle');
+        $('#futureModal').modal('show');
         return;
+      } else {
+        $('#futureModal').modal('hide');
       }
       getApod(newDate, handleApod);
     };
