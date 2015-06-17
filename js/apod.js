@@ -99,9 +99,8 @@ $(document).ready(function() {
     var now     = new Date(),
         hour    = padString(now.getHours().toString(), 2),
         minute  = padString(now.getMinutes().toString(), 2),
-        seconds = now.getSeconds(),
-        colon   = seconds % 3 === 0 ? ':' : ' ';
-    $('#apodTime').text(hour + colon + minute);
+        seconds = now.getSeconds();
+    $('#apodTime').text(hour + ':' + minute);
   }
 
   /**

@@ -6,7 +6,7 @@ html, body {
   position: absolute;
 
   display: block;
-  top: 20%;
+  top: 40%;
   left: 50%;
   width: 100%;
   text-align: center;
@@ -49,20 +49,23 @@ h1 {
   text-align: center;
 }
 
+#apodTime {
+  font-size: 320px;
+  opacity: 0.4;
+  font-weight: bold;
+  font-family: helvetica, sans-serif;
+}
 #apodTitle {
   color: white;
   text-align: center;
   font-size: 36px;
+  opacity: 0.8;
+  font-family: helvetica, sans-serif;
 }
 #newDay {
   color: white;
   text-align: center;
   font-size: 20px;
-}
-
-
-#apodTime {
-  font-size: 150px;
 }
 
 #apodBack {
