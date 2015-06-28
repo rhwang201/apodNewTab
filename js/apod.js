@@ -227,6 +227,7 @@ $(document).ready(function() {
 
       xhr.onload = function() {
         localStorage['currentDate'] = clearTime(new Date(date)).toString();
+        localStorage['lastOpened'] = clearTime(new Date(today)).toString();
         currentDate = date;
         callback.apply(this, [date]);
       };
@@ -248,6 +249,7 @@ $(document).ready(function() {
 
       render(cachedImage, cachedTitle, false, cachedDate, cachedExplanation, media_type);
       localStorage['currentDate'] = clearTime(new Date(date)).toString();
+      localStorage['lastOpened'] = clearTime(new Date(today)).toString();
     }
   };
 
@@ -385,7 +387,6 @@ $(document).ready(function() {
       currentDate = cachedCurrentDate;
     }
   }
-  localStorage['lastOpened'] = clearTime(new Date(today)).toString();
 
   setTime();
   setInterval(setTime, 1000);
