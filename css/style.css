@@ -106,5 +106,10 @@ h1 {
 
 .modal-content {
   background-color: rgba(0, 0, 0, 0.7);
-  color: white;
+  color: rgba(223, 223, 223, 1);
+}
+
+.modal-body {
+  line-height: 1.7em;
+  font-size: 15px;
 }
