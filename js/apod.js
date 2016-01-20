@@ -218,7 +218,7 @@ $(document).ready(function() {
         cachedApod = cachedString ? JSON.parse(cachedString) : undefined;
 
     if (cachedApod === undefined) {
-      var url = 'https://api.data.gov/nasa/planetary/apod?' +
+      var url = 'https://api.nasa.gov/planetary/apod?' +
                 'api_key=xA6qXqQnycGiLMWi93CSQ0qCGhXRiZMBqdoeO8vs&' +
                 'date=' + dateString;
       var xhr = new XMLHttpRequest();
